@@ -7,7 +7,7 @@ let HEIGHT = window.innerHeight;
 let camera = new THREE.PerspectiveCamera(
     35, WIDTH / HEIGHT, .1 ,10000);
 
-let renderer , mesh, mesh2, lathe, planeMesh = null;
+let renderer , mesh, mesh2, lathe, planeMesh, geomPlane = null;
 
 function main(){
     console.log('init');
@@ -45,15 +45,16 @@ function main(){
     mesh2 = new THREE.Mesh(geom2 , mat2);
     mesh2.position.set(0,0,-1000);
 
-    let geomPlane = new THREE.PlaneGeometry(100,100);
+    geomPlane = new THREE.PlaneGeometry(10,10 ,32);
     planeMesh = new THREE.Mesh(geomPlane, mat);
+    planeMesh.position.z = -100;
 
 
     //POINTS
 
     let points = []
     for (let i = 0; i < 10; i +=1){
-        points.push( new THREE.Vector2( 5 + Math.sin(i*.1) * 40 , i * 10 ));
+        points.push( new THREE.Vector2( 5 + Math.sin(i*.1) * 40 , i * 2 ));
     }
     let geom3 = new THREE.LatheGeometry( points );
     let mat3 = new THREE.MeshLambertMaterial( { color: 0xffff00 } );
@@ -64,12 +65,12 @@ function main(){
     let ambientLight = new THREE.AmbientLight(0xffffff , 0.5);
     let spotLight =  new THREE.PointLight(0xffffff, 0.5);
 
-    scene.add(mesh);
-    scene.add(mesh2);
-    scene.add(lathe);
+    // scene.add(mesh);
+    // scene.add(mesh2);
+    // scene.add(lathe);
     scene.add(ambientLight);
     scene.add(spotLight);
-    scene.add(planeMesh);
+    // scene.add(planeMesh);
 
     // RENDER
     render();
@@ -81,10 +82,12 @@ function render(){
 
     lathe.rotation.x += 0.01;
     lathe.rotation.z += 0.01;
+    planeMesh.rotation.z += 0.01;
+    // planeMesh.rotation.z += 0.01;
 
     delta+=0.1;
-    // planeMesh.vertices[0].x = -25 + Math.sin(delta)*50;
-    // planeMesh.verticesNeedUpdate = true;
+    geomPlane.vertices[0].x = -25 + Math.sin(delta)*5;
+    geomPlane.verticesNeedUpdate = true;
 
     renderer.render(scene, camera);
     requestAnimationFrame(render);
