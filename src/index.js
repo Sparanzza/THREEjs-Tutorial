@@ -7,10 +7,11 @@ let HEIGHT = window.innerHeight;
 let camera = new THREE.PerspectiveCamera(
     35, WIDTH / HEIGHT, .1 ,10000);
 
-let renderer , mesh, mesh2, lathe, planeMesh, geomPlane = null;
+    let g, mt, m;
+    let g2, mt2, m2;
+
 
 function main(){
-    console.log('init');
     renderer = new THREE.WebGLRenderer(
         {
             canvas:document.getElementById('myCanvas'),
@@ -20,75 +21,79 @@ function main(){
     renderer.setClearColor(0x000000);
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setSize(WIDTH, HEIGHT);
-    
+
+    //MATERIALS
+    // material = new THREE.MeshBasicMaterial( {color: 0xffff00} );
+
+    // material = new THREE.MeshLambertMaterial( {
+    //     color: 0xff0000,
+    //     transparent: true,
+    //     opacity:1,
+    //     wireframe: true,
+    //     wireframeLinewidth: 6,
+    //     wireframeLinecap: 'round',
+    //     wireframeLinejoin: 'round'
+    // });
+
+    // material = new THREE.MeshNormalMaterial( {
+    //      color: 0xff0000,
+    //      transparent: true,
+    //      opacity:1,
+    //      wireframeLinewidth: 6,
+    //      wireframeLinecap: 'round',
+    //      wireframeLinejoin: 'round'
+    //  });
+
+    // mt = new THREE.MeshLambertMaterial( {
+    //     color: 0xfafafa,
+    //     side: THREE.FrontSide
+    // });
+
+    mt = new THREE.MeshPhongMaterial( {
+        color: 0x999999,
+        specular: 0x0000ff,
+        shininess:10,
+        side: THREE.FrontSide,
+        map: new THREE.TextureLoader().load('wood.jpg')
+    });
+
     // GEOMS
+    // g = new THREE.SphereGeometry( 48, 16, 16 );
+    g = new THREE.BoxGeometry(40,40,40);
+    m = new THREE.Mesh( g, mt );
+    m.position.set(-100,0,-1000);
 
-    // cube
-    let geom = new THREE.BoxGeometry(100,100,100);
-    let mat = new THREE.MeshLambertMaterial({
-        color: 0xeaf1fc
-    });
-    mesh = new THREE.Mesh(geom , mat);
-    mesh.position.set(150,0,-1000);
+    g2 = new THREE.SphereGeometry( 32, 16, 16 );
+    m2 = new THREE.Mesh( g2, mt );
+    m2.position.set(100,0,-1000);
 
-    // vertexs
-    let geom2 = new THREE.Geometry();
-    geom2.vertices.push(
-        new THREE.Vector3(-10,10,0),
-        new THREE.Vector3(-10,-10,0),
-        new THREE.Vector3(10,-10,0),
-    );
-    geom2.faces.push( new THREE.Face3(0,1,2));
-    let mat2 = new THREE.MeshLambertMaterial({
-        color: 0xeaf1fc
-    });
-    mesh2 = new THREE.Mesh(geom2 , mat2);
-    mesh2.position.set(0,0,-1000);
+    // FLOOR
+    let floorGeom = new THREE.PlaneGeometry(200,200,10,10);
+    let floorMesh = new THREE.Mesh( floorGeom, mt);
+    floorMesh.position.set(0, -10, -100);
+    floorMesh.rotation.set( THREE.Math.degToRad(-90) ,0,0 );
 
-    geomPlane = new THREE.PlaneGeometry(10,10 ,32);
-    planeMesh = new THREE.Mesh(geomPlane, mat);
-    planeMesh.position.z = -100;
-
-
-    //POINTS
-
-    let points = []
-    for (let i = 0; i < 10; i +=1){
-        points.push( new THREE.Vector2( 5 + Math.sin(i*.1) * 40 , i * 2 ));
-    }
-    let geom3 = new THREE.LatheGeometry( points );
-    let mat3 = new THREE.MeshLambertMaterial( { color: 0xffff00 } );
-    lathe = new THREE.Mesh( geom3, mat3 );
-    lathe.position.set(-100,0,-1000);
+    
 
     // LIGHTS
     let ambientLight = new THREE.AmbientLight(0xffffff , 0.5);
-    let spotLight =  new THREE.PointLight(0xffffff, 0.5);
+    let spotLight =  new THREE.PointLight(0xffffaa, 0.9);
+    spotLight.position.set(0,100,100);
 
-    // scene.add(mesh);
-    // scene.add(mesh2);
-    // scene.add(lathe);
+    
+    scene.add( m );
+    scene.add( m2 );
+    scene.add( floorMesh );
     scene.add(ambientLight);
     scene.add(spotLight);
-    // scene.add(planeMesh);
 
     // RENDER
     render();
 }
-let delta = 0;
+
 function render(){
-    mesh.rotation.x += 0.01;
-    mesh.rotation.z += 0.01;
-
-    lathe.rotation.x += 0.01;
-    lathe.rotation.z += 0.01;
-    planeMesh.rotation.z += 0.01;
-    // planeMesh.rotation.z += 0.01;
-
-    delta+=0.1;
-    geomPlane.vertices[0].x = -25 + Math.sin(delta)*5;
-    geomPlane.verticesNeedUpdate = true;
-
+    m.rotation.z += 0.005;
+    m.rotation.x += 0.005;
     renderer.render(scene, camera);
     requestAnimationFrame(render);
 }
