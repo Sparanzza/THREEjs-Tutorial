@@ -10,6 +10,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "copy-webpack-plugin": "^5.0.2",
     "three": "^0.102.1",
     "webpack": "^4.29.6",
     "webpack-cli": "^3.2.3"
