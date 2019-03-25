@@ -1,3 +1,4 @@
+var webpack = require('webpack');
 const path = require('path');
 const CopyPlugin = require('copy-webpack-plugin');
 
@@ -13,9 +14,13 @@ module.exports = {
         filename: 'main.js',
         path: path.resolve(__dirname, 'dist')
     },
+    externals: {
+      'three.js': 'THREE'
+    },
     plugins: [
         new CopyPlugin([
           { from: './src/shaders/', to: './shaders/' },
         ]),
+
       ],
 };

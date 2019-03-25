@@ -9,9 +9,16 @@ let HEIGHT = window.innerHeight;
 let camera = new THREE.PerspectiveCamera(
     35, WIDTH / HEIGHT, .1 ,10000);
 
-    let g, mt, m;
-    let g2, mt2, m2;
+var g, mt, m;
+let g2, mt2, m2;
 
+var customUniforms = {
+    delta: {value: 0}
+};
+   
+
+
+var delta = 0;
 
 function main(){
     renderer = new THREE.WebGLRenderer(
@@ -61,71 +68,79 @@ function main(){
     //     normalMap : new THREE.TextureLoader().load('wood.jpg')
     // });
     
-    // mt = new THREE.MeshStandardMaterial( {
-    //      color: 0x999999,
-    //      specular: 0x0000ff,
-    //      metalness:.5,
-    //      roughness:0.1,
-    //      side: THREE.FrontSide,
-    //  });
+    mt2 = new THREE.MeshStandardMaterial( {
+        color: 0xBBBBBB,
+        metalness:.5,
+        roughness:0.1,
+        side: THREE.FrontSide,
+    });
 
     // mt = new THREE.LineDashedMaterial({
         //     dashSize:2,
         //     gapSize: 2
         // });
-        
-    var uniforms = {
-        delta:{ value:0 }
-    }
+         
     mt = new THREE.ShaderMaterial({
-        uniforms: uniforms,
+        uniforms: customUniforms,
         vertexShader: VERTEX,
         fragmentShader: FRAGMENT
     });
     // GEOMS
     // g = new THREE.SphereGeometry( 48, 16, 16 );
-    g = new THREE.BoxGeometry(64,64,64);
+    g = new THREE.BoxBufferGeometry(100,100,100,10,10,10);
     m = new THREE.Mesh( g, mt );
     m.position.set(-100,0,0);
 
     g2 = new THREE.SphereGeometry( 64, 16, 16 );
-    m2 = new THREE.Mesh( g2, mt );
+    m2 = new THREE.Mesh( g2, mt2 );
     m2.position.set(100,0,0);
 
     // FLOOR
     let floorGeom = new THREE.PlaneGeometry(500,500,10,10);
-    let floorMesh = new THREE.Mesh( floorGeom, mt);
+    let floorMesh = new THREE.Mesh( floorGeom, mt2);
     floorMesh.position.set(0, -100,0);
     floorMesh.rotation.set( THREE.Math.degToRad(-90) ,0,0 );
     
     // LIGHTS
     let ambientLight = new THREE.AmbientLight(0xEAEAEA , 0.5);
-    let spotLight =  new THREE.PointLight(0xEAEAEA, 0.9);
+    let spotLight =  new THREE.PointLight(0xFF88EA, 0.9);
     spotLight.position.set(0,100,100);
     
+    var vertexDisplacement = new Float32Array( g.attributes.position.count);
+    for(let i = 0; i < vertexDisplacement.length; i+=1 ) {
+        vertexDisplacement[i] = Math.sin(i);
+    }
+
     
+    m.geometry.addAttribute('vertexDisplacement', new THREE.BufferAttribute(vertexDisplacement, 1));
+
     scene.add( m );
     scene.add( m2 );
     scene.add( floorMesh );
     scene.add(ambientLight);
     scene.add(spotLight);
 
-    var vertexDisplacement = new Float32Array( g.attributes.position.count);
-    for(let i = 0; i < vertexDisplacement.length; i++) {
-        vertexDisplacement[i] = Math.sin(i);
-    }
-
     // RENDER
     render();
 }
 
-function render(){
-    m.rotation.z += 0.005;
-    m.rotation.x += 0.005;
-    camera.position.z -= 0.5;
-    renderer.render(scene, camera);
-    requestAnimationFrame(render);
-}
+    function render() {
+
+        delta += 0.1;
+
+        //uniform
+        m.mt.uniforms.delta.value = 0.5 + Math.sin(delta) * 0.5;
+
+        //attribute
+        for (var i = 0; i < vertexDisplacement.length; i ++) {
+            vertexDisplacement[i] = 0.5 + Math.sin(i + delta) * 0.25;
+        }
+        m.geometry.attributes.vertexDisplacement.needsUpdate = true;
+
+
+    	renderer.render(scene, camera);
+    	requestAnimationFrame(render);
+    }
 
 
 // MAIN 

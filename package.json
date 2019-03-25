@@ -12,6 +12,7 @@
   "devDependencies": {
     "copy-webpack-plugin": "^5.0.2",
     "three": "^0.102.1",
+    "uglifyjs-webpack-plugin": "^2.1.2",
     "webpack": "^4.29.6",
     "webpack-cli": "^3.2.3"
   },
