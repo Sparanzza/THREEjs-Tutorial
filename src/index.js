@@ -74,7 +74,11 @@ function main(){
         //     gapSize: 2
         // });
         
+    var uniforms = {
+        delta:{ value:0 }
+    }
     mt = new THREE.ShaderMaterial({
+        uniforms: uniforms,
         vertexShader: VERTEX,
         fragmentShader: FRAGMENT
     });
@@ -106,7 +110,11 @@ function main(){
     scene.add(ambientLight);
     scene.add(spotLight);
 
-    
+    var vertexDisplacement = new Float32Array( g.attributes.position.count);
+    for(let i = 0; i < vertexDisplacement.length; i++) {
+        vertexDisplacement[i] = Math.sin(i);
+    }
+
     // RENDER
     render();
 }
