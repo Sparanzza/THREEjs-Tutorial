@@ -8,7 +8,7 @@ let HEIGHT = window.innerHeight;
 // CAMERA
 let camera = new THREE.PerspectiveCamera(
     35, WIDTH / HEIGHT, .1 ,10000);
-camera.position.z = 550;
+camera.position.z = 250;
 var renderer = null;
 
 function main(){
@@ -29,16 +29,16 @@ function main(){
     //MATERIALS
     material = new THREE.MeshLambertMaterial( {
         color: 0xEEEEEE,
-        side: THREE.DoubleSide,
+
     });
 
     // GEOMS
-    boxGeom = new THREE.BoxGeometry( 64, 64, 64 );
+    boxGeom = new THREE.BoxGeometry( 32, 32, 32 );
     boxMesh = new THREE.Mesh( boxGeom, material );
-    boxMesh.position.set(100,0,0);
+    boxMesh.position.set(50,0,0);
     scene.add(boxMesh);
 
-    floorGeom = new THREE.PlaneGeometry(1000,1000,100,100);
+    floorGeom = new THREE.PlaneBufferGeometry( 400, 400, 32, 32 );
     floorMesh = new THREE.Mesh( floorGeom, material);
     floorMesh.position.set(0, -50,0);
     floorMesh.rotation.set( THREE.Math.degToRad(-90) ,0,0 );
@@ -46,6 +46,7 @@ function main(){
 
     // SET SHADOW MAP
     boxMesh.castShadow = true;
+    boxMesh.receiveShadow = true;
     floorMesh.receiveShadow = true;
 
     // LIGHTS
@@ -53,29 +54,19 @@ function main(){
     scene.add(ambientLight);
     
     spotLight =  new THREE.SpotLight(0xEEEEFF, 2 , 1000);
-    spotLight.position.set( 200, 200, 100 );
-    spotLight.angle = Math.PI / 6;
+    spotLight.position.set( 200, 200, 200 );
+    spotLight.angle = Math.PI / 10;
     spotLight.penumbra = 0.01;
     spotLight.decay = 2;
     spotLight.castShadow = true;
-    spotLight.shadow.mapSize.width = 2048;
-    spotLight.shadow.mapSize.height = 2048;
+    spotLight.shadow.mapSize.width = 1024;
+    spotLight.shadow.mapSize.height = 1024;
     //create shadow
-    //spotLight.shadow = new THREE.LightShadow( new THREE.PerspectiveCamera(100,1,500,1000));
     //spotLight.shadow.bias = 0.001;
-
     scene.add(spotLight);
     
     lightHelper = new THREE.SpotLightHelper( spotLight );
 	scene.add( lightHelper );
-
-
-
-    /*
-    // LIGHTS
-
-
-*/
 
     // RENDER
     render();

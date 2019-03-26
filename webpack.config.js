@@ -17,6 +17,7 @@ module.exports = {
     externals: {
       'three.js': 'THREE'
     },
+
     plugins: [
         new CopyPlugin([
           { from: './src/shaders/', to: './shaders/' },
