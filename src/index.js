@@ -7,20 +7,12 @@ let WIDTH = window.innerWidth;
 let HEIGHT = window.innerHeight;
 // CAMERA
 let camera = new THREE.PerspectiveCamera(
-    35, WIDTH / HEIGHT, .1 ,1000);
-
-var g, mt, m;
-let g2, mt2, m2;
-
-var customUniforms = {
-    delta: {value: 0}
-};
-var renderer;
-
-
-var delta = 0;
+    35, WIDTH / HEIGHT, .1 ,10000);
+camera.position.z = 550;
+var renderer = null;
 
 function main(){
+    // RENDERER
     renderer = new THREE.WebGLRenderer(
         {
             canvas:document.getElementById('myCanvas'),
@@ -30,112 +22,71 @@ function main(){
     renderer.setClearColor(0x000000);
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setSize(WIDTH, HEIGHT);
-    camera.position.z = 1000;
+    renderer.shadowMap.enabled = true;
+	renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
 
     //MATERIALS
-    // material = new THREE.MeshBasicMaterial( {color: 0xffff00} );
-
-    // material = new THREE.MeshLambertMaterial( {
-    //     color: 0xff0000,
-    //     transparent: true,
-    //     opacity:1,
-    //     wireframe: true,
-    //     wireframeLinewidth: 6,
-    //     wireframeLinecap: 'round',
-    //     wireframeLinejoin: 'round'
-    // });
-
-    // material = new THREE.MeshNormalMaterial( {
-    //      color: 0xff0000,
-    //      transparent: true,
-    //      opacity:1,
-    //      wireframeLinewidth: 6,
-    //      wireframeLinecap: 'round',
-    //      wireframeLinejoin: 'round'
-    //  });
-
-    // mt = new THREE.MeshLambertMaterial( {
-    //     color: 0xfafafa,
-    //     side: THREE.FrontSide
-    // });
-
-    // mt = new THREE.MeshPhongMaterial( {
-    //     color: 0x999999,
-    //     specular: 0x0000ff,
-    //     shininess:10,
-    //     side: THREE.FrontSide,
-    //     map: new THREE.TextureLoader().load('wood.jpg'),
-    //     normalMap : new THREE.TextureLoader().load('wood.jpg')
-    // });
-    
-    mt = new THREE.MeshStandardMaterial( {
-        color: 0xBBBBBB,
-        metalness:.5,
-        roughness:0.1,
-        side: THREE.FrontSide,
+    material = new THREE.MeshLambertMaterial( {
+        color: 0xEEEEEE,
+        side: THREE.DoubleSide,
     });
 
-    // mt = new THREE.LineDashedMaterial({
-        //     dashSize:2,
-        //     gapSize: 2
-        // });
-         
-    // mt = new THREE.ShaderMaterial({
-    //     uniforms: customUniforms,
-    //     vertexShader: VERTEX,
-    //     fragmentShader: FRAGMENT
-    // });
     // GEOMS
+    boxGeom = new THREE.BoxGeometry( 64, 64, 64 );
+    boxMesh = new THREE.Mesh( boxGeom, material );
+    boxMesh.position.set(100,0,0);
+    scene.add(boxMesh);
 
-    g = new THREE.SphereGeometry( 64, 16, 16 );
-    m = new THREE.Mesh( g, mt );
-    m.position.set(100,0,0);
-
-    // FLOOR
-    let floorGeom = new THREE.PlaneGeometry(5000,5000,10,10);
-    let floorMesh = new THREE.Mesh( floorGeom, mt);
-    floorMesh.position.set(0, -100,0);
+    floorGeom = new THREE.PlaneGeometry(1000,1000,100,100);
+    floorMesh = new THREE.Mesh( floorGeom, material);
+    floorMesh.position.set(0, -50,0);
     floorMesh.rotation.set( THREE.Math.degToRad(-90) ,0,0 );
-    
-    // LIGHTS
-    let ambientLight = new THREE.AmbientLight(0xEAEAEA , 0.5);
-    renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFShadowMap;
-    
+    scene.add(floorMesh);
 
-    let spotLight =  new THREE.PointLight(0xFF88EA, 0.9);
-    spotLight.position.set(0,100,0);
-    spotLight.target = m2;
-    spotLight.castShadow = true;
-    spotLight.shadow = new THREE.LightShadow(
-        new THREE.PerspectiveCamera(100,1,500,1000)
-        );
-    spotLight.shadow.bias = 0.001;
-    spotLight.shadow.mapSize.width = 2048 * 2;
-    spotLight.shadow.mapSize.height = 2048 * 2;
-
-    m.castShadow = true;
+    // SET SHADOW MAP
+    boxMesh.castShadow = true;
     floorMesh.receiveShadow = true;
 
-    
-
- 
-    scene.add( m );
-    scene.add( m2 );
-    scene.add( floorMesh );
+    // LIGHTS
+    ambientLight =  new THREE.AmbientLight(0xFFFFFF, 0.1);
     scene.add(ambientLight);
+    
+    spotLight =  new THREE.SpotLight(0xEEEEFF, 2 , 1000);
+    spotLight.position.set( 200, 200, 100 );
+    spotLight.angle = Math.PI / 6;
+    spotLight.penumbra = 0.01;
+    spotLight.decay = 2;
+    spotLight.castShadow = true;
+    spotLight.shadow.mapSize.width = 2048;
+    spotLight.shadow.mapSize.height = 2048;
+    //create shadow
+    //spotLight.shadow = new THREE.LightShadow( new THREE.PerspectiveCamera(100,1,500,1000));
+    //spotLight.shadow.bias = 0.001;
+
     scene.add(spotLight);
+    
+    lightHelper = new THREE.SpotLightHelper( spotLight );
+	scene.add( lightHelper );
+
+
+
+    /*
+    // LIGHTS
+
+
+*/
 
     // RENDER
     render();
 }
 
-    function render() {
-
-    	renderer.render(scene, camera);
-    	requestAnimationFrame(render);
-    }
-
+function render() {
+    boxMesh.rotation.z += 0.01;
+    boxMesh.rotation.x += 0.01;
+    renderer.render(scene, camera);
+    requestAnimationFrame(render);
+}
 
 // MAIN 
 main();
