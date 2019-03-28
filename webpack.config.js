@@ -3,6 +3,7 @@ const path = require('path');
 const CopyPlugin = require('copy-webpack-plugin');
 
 module.exports = {
+    mode: 'development',
     watch: true,
     watchOptions: {
         ignored: /node_modules/,
@@ -11,12 +12,12 @@ module.exports = {
       },
     entry: './src/index.js',
     output: {
-        filename: 'main.js',
+        filename: 'bundle.js',
         path: path.resolve(__dirname, 'dist')
     },
-    externals: {
-      'three.js': 'THREE'
-    },
+    // externals: {
+    //   'three.js': 'THREE'
+    // },
 
     plugins: [
         new CopyPlugin([
